@@ -1,3 +1,0 @@
-port: :8088
-router:
-    /image: D:/Workspace/node/my-app/build

@@ -1,6 +1,6 @@
-module mmm3w/sparking/core
+module mmm3w/sparking
 
-go 1.16
+go 1.17
 
 require (
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
