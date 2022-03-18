@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"mmm3w/sparking/resb"
+	"mmm3w/sparking/wsk"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/gorilla/mux"
@@ -43,10 +44,14 @@ func start() *http.Server {
 func attachComponent(r *mux.Router) {
 	componentMapping := viper.GetStringMapString("component")
 	fmt.Println("component:", componentMapping)
-
 	//resb
 	if componentMapping["resb"] != "" {
 		r.HandleFunc(componentMapping["resb"], resb.Find)
+	}
+	//wsk
+	if componentMapping["wsk"] != "" {
+		wsk.Init()
+		r.HandleFunc(componentMapping["wsk"], wsk.WsHandler)
 	}
 }
 

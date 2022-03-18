@@ -1,4 +1,4 @@
-package main
+package wsk
 
 import (
 	"encoding/json"
@@ -22,7 +22,8 @@ func initHandler() {
 	handlerLock.Lock()
 	defer handlerLock.Unlock()
 
-	handler["link"] = link
+	handler["named"] = named     //客户端别名
+	handler["forward"] = forward //转发消息
 }
 
 func getHandler(t string) MessageHandler {

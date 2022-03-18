@@ -1,15 +1,20 @@
-package main
+package wsk
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
+	"reflect"
+	"unsafe"
 
 	"github.com/gorilla/websocket"
 )
 
 type Client struct {
-	Connect *websocket.Conn // 连接
-	Msg     chan []byte     // 待发送的数据
-	IsAdmit bool
+	Connect *websocket.Conn
+	Msg     chan []byte
+	Mark    string
+	Name    string
 }
 
 func (client *Client) Send(msg []byte) {
@@ -47,4 +52,19 @@ func (client *Client) writeLoop() {
 		}
 		client.Connect.WriteMessage(websocket.TextMessage, message)
 	}
+}
+
+func (client *Client) toBytes() []byte {
+	var x reflect.SliceHeader
+	x.Len = int(unsafe.Sizeof(client))
+	x.Cap = int(unsafe.Sizeof(client))
+	x.Data = uintptr(unsafe.Pointer(&client))
+	return *(*[]byte)(unsafe.Pointer(&x))
+}
+
+func (client *Client) md5() string {
+	md5h := md5.New()
+	md5h.Write(client.toBytes())
+	sliceh := md5h.Sum(nil)
+	return hex.EncodeToString(sliceh)
 }

@@ -1,4 +1,4 @@
-package main
+package wsk
 
 import (
 	"fmt"
@@ -8,28 +8,36 @@ import (
 )
 
 var (
-	clients              = make(map[string]*Client) //client管理
-	clientLock           sync.RWMutex
-	clientAdmitState     = make(map[*Client]bool)
-	clientAdmitStateLock sync.RWMutex
+	clients    = make(map[string]*Client)
+	clientLock sync.RWMutex
 )
 
 func newClient(conn *websocket.Conn) *Client {
-	clientAdmitStateLock.Lock()
-	defer clientAdmitStateLock.Unlock()
+	clientLock.Lock()
+	defer clientLock.Unlock()
+
 	client := Client{
 		Connect: conn,
 		Msg:     make(chan []byte, 10),
-		IsAdmit: false,
+		Mark:    "",
+		Name:    "",
 	}
-	clientAdmitState[&client] = false
+	client.Mark = client.md5()
+	clients[client.Mark] = &client
 	fmt.Println("Connect:", "New client")
 	return &client
 }
 
-func admitClient(client *Client, flag string) {
+func changeName(client *Client, name string) {
 	clientLock.Lock()
 	defer clientLock.Unlock()
+	delete(clients, client.Mark)
+	client.Name = name
+	clients[name] = client
+}
 
-	// client[]
+func findClient(name string) *Client {
+	clientLock.RLock()
+	defer clientLock.RUnlock()
+	return clients[name]
 }
