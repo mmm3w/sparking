@@ -32,6 +32,8 @@ func (client *Client) readLoop() {
 	for {
 		_, message, err := client.Connect.ReadMessage()
 		if err != nil {
+			removeClient(client.Name)
+			offline(client.Name)
 			return
 		}
 		interceptMessage(client, message)

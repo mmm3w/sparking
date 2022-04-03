@@ -7,8 +7,13 @@ import (
 )
 
 type Message struct {
-	Type    string      `json:"type"`
-	Content interface{} `json:"content"`
+	Cmd     string      `json:"cmd"`
+	Content interface{} `json:"data"`
+}
+
+type Resp struct {
+	Event   string      `json:"event"`
+	Content interface{} `json:"data"`
 }
 
 type MessageHandler func(client *Client, message []byte)
@@ -49,10 +54,10 @@ func interceptMessage(client *Client, message []byte) {
 		return
 	}
 
-	h := getHandler(data.Type)
+	h := getHandler(data.Cmd)
 	if h != nil {
 		h(client, content)
 	} else {
-		fmt.Println("Not found handler:", data.Type)
+		fmt.Println("Not found handler:", data.Cmd)
 	}
 }

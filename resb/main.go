@@ -11,19 +11,6 @@ import (
 	"mmm3w/sparking/support"
 )
 
-func findThumb(folder string, parent string) string {
-	dir, err := ioutil.ReadDir(folder)
-	if err != nil {
-		return ""
-	}
-	for _, fi := range dir {
-		if !fi.IsDir() {
-			return path.Join(parent, fi.Name())
-		}
-	}
-	return ""
-}
-
 func getData(md string, sbd string) (string, error) {
 	if md == "" {
 		return "", errors.New("main directory is empty")
@@ -45,11 +32,12 @@ func getData(md string, sbd string) (string, error) {
 				dirNode["name"] = fi.Name()
 				dirNode["relative"] = relativePath
 				dirNode["absolute"] = absolutePath
-				dirNode["thumb"] = findThumb(absolutePath, relativePath)
+				dirNode["thumb"] = support.Exists(path.Join(absolutePath, ".thumb"))
 				dirs = append(dirs, dirNode)
 			} else {
 				relativePath := path.Join(sbd, fi.Name())
 				absolutePath := path.Join(targetFolder, fi.Name())
+				thumbPath := path.Join(targetFolder, ".thumbcache", fi.Name()+".jpg")
 
 				fileNode := make(map[string]interface{})
 				fileNode["name"] = fi.Name()
@@ -57,6 +45,7 @@ func getData(md string, sbd string) (string, error) {
 				fileNode["absolute"] = absolutePath
 				fileNode["suffix"] = path.Ext(fi.Name())
 				fileNode["size"] = fi.Size()
+				fileNode["thumb"] = support.Exists(thumbPath)
 				files = append(files, fileNode)
 			}
 		}

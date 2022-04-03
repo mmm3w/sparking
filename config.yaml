@@ -1,5 +1,9 @@
-port: :8088
+port: :8084
 component:
     resb: /find
+    wsk: /wsk
 router:
-    # /image: D:/Workspace/node/my-app/build
+    /image01: E:/Picture
+    /video01: E:/Video
+    /video02: G:/enterm
+    
