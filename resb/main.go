@@ -45,7 +45,12 @@ func getData(md string, sbd string) (string, error) {
 				fileNode["absolute"] = absolutePath
 				fileNode["suffix"] = path.Ext(fi.Name())
 				fileNode["size"] = fi.Size()
-				fileNode["thumb"] = support.Exists(thumbPath)
+				if support.Exists(thumbPath) {
+					fileNode["thumb"] = path.Join(sbd, ".thumbcache", fi.Name()+".jpg")
+				} else {
+					fileNode["thumb"] = ""
+				}
+
 				files = append(files, fileNode)
 			}
 		}
