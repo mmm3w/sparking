@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"path"
 
 	"mmm3w/sparking/support"
@@ -83,6 +85,46 @@ func Find(w http.ResponseWriter, r *http.Request) {
 		} else {
 			w.Header().Set("content-type", "text/json")
 			code, message = 200, data
+		}
+	} else {
+		code, message = 403, "Error"
+	}
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.WriteHeader(code)
+	fmt.Fprint(w, message)
+}
+
+func Upload(w http.ResponseWriter, r *http.Request) {
+	var code int
+	var message string
+	if r.Method == "POST" {
+		r.ParseMultipartForm(32 << 20)
+
+		dir := support.GetValue(r.PostForm, "dir", "")
+		file, handler, err := r.FormFile("file")
+
+		if err != nil {
+			code, message = 500, err.Error()
+		} else if dir == "" {
+			defer file.Close()
+			code, message = 500, "dir is empty"
+		} else {
+			defer file.Close()
+			support.EnsureDir(dir)
+
+			filePath := path.Join(dir, handler.Filename)
+			if support.Exists(filePath) {
+				os.Remove(filePath)
+			}
+
+			f, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE, 0666)
+			if err != nil {
+				code, message = 500, err.Error()
+			} else {
+				defer f.Close()
+				io.Copy(f, file)
+				code, message = 200, "Success"
+			}
 		}
 	} else {
 		code, message = 403, "Error"

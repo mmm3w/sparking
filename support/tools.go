@@ -16,6 +16,25 @@ func Exists(path string) bool {
 	return true
 }
 
+func IsDir(path string) bool {
+	s, err := os.Stat(path)
+	if err != nil {
+		return false
+	}
+	return s.IsDir()
+}
+
+func EnsureDir(path string) {
+	if Exists(path) {
+		if !IsDir(path) {
+			os.Remove(path)
+			os.MkdirAll(path, os.ModePerm)
+		}
+	} else {
+		os.MkdirAll(path, os.ModePerm)
+	}
+}
+
 func GetValue(values url.Values, key string, def string) string {
 	if vs := values[key]; len(vs) > 0 {
 		return vs[0]

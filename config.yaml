@@ -1,6 +1,8 @@
 port: :8084
 component:
-    resb: /find
+    resb:
+        res: /find
+        upload: /upload
     wsk: /wsk
 router:
     /image01: E:/Picture

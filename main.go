@@ -42,17 +42,28 @@ func start() *http.Server {
 }
 
 func attachComponent(r *mux.Router) {
-	componentMapping := viper.GetStringMapString("component")
-	fmt.Println("component:", componentMapping)
 	//resb
-	if componentMapping["resb"] != "" {
-		r.HandleFunc(componentMapping["resb"], resb.Find)
+	resbComponent := viper.Get("component.resb")
+	if resbComponent != nil {
+		fmt.Println("component:resb--> ", resbComponent)
+		res := viper.GetString("component.resb.res")
+		if res != "" {
+			r.HandleFunc(res, resb.Find)
+		}
+
+		upload := viper.GetString("component.resb.upload")
+		if upload != "" {
+			r.HandleFunc(upload, resb.Upload)
+		}
 	}
+
 	//wsk
-	if componentMapping["wsk"] != "" {
+	wskComponent := viper.Get("component.wsk")
+	if wskComponent != nil {
 		wsk.Init()
-		r.HandleFunc(componentMapping["wsk"], wsk.WsHandler)
+		fmt.Println("component:wsk--> ", wskComponent)
 	}
+
 }
 
 func main() {

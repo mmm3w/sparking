@@ -1,0 +1,17 @@
+{
+    "list":[
+        {
+            "id":"uuid",
+            "name":"示例",
+            "lrc":"歌词文件",
+            "is_lossless":false,
+            "meta":"数据元",
+            "artist":[ {
+                "name":"艺术家"
+            } ],
+            "list":[{
+                "name":"所属"
+            }]
+        }
+    ]
+}
